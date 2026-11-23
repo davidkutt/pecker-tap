@@ -1,0 +1,16 @@
+# David's private data: real notes, gold sets, source snapshots, run outputs. Never tracked.
+private/
+.env
+.env.*
+!.env.example
+runs/
+
+# Python / tooling
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
