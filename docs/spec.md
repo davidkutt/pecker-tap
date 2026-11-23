@@ -96,6 +96,12 @@ Rules that decide between them:
    it is `contradicted`. The verifier never picks a winner.
 4. **Archived copies** (Wayback) count as the source they copy, flagged `archived: true`.
 5. **Never fix silently.** Typos and wording issues are entries, not edits.
+6. **Two kinds of `new_finding`.** (a) A primary-source conflict the note doesn't record, for a value
+   the note states: the entry `c-NNNN-n1` sits next to the claim `c-NNNN`. (b) Material facts the
+   official record has for an advisory the note names but doesn't state: one entry `n-NNNN` per
+   advisory (numbered in note order) listing every missing field among severity and score, fixed
+   version or "no fix", CWE, and the CVE/GHSA alias. Dates are not reported this way; a record has
+   too many of them to be useful.
 
 ### Pack entry
 
@@ -126,7 +132,7 @@ Evidence is gathered in this order and stops at the first source that settles th
 1. **Structured APIs** (no LLM): GitHub global advisory API (`/advisories/{ghsa}`) and repository
    advisory API (`/repos/{owner}/{repo}/security-advisories/{ghsa}`), CVE.org (CVE Services
    `cveawg.mitre.org/api/cve/{id}`), NVD API 2.0, the ATLAS YAML of a pinned release, OWASP tables
-   kept in `data/owasp/` with their year, HackerOne public report JSON.
+   kept in `data/owasp/` with their year, HackerOne public report JSON (V2).
 2. **Cited URLs** from the claim or the note's `sources`, fetched as plain HTTP (no JavaScript, no
    cookies, no login), HTML converted to text, size-capped. Long pages are split and indexed with
    LlamaIndex; the judge sees the top passages for the claim, with their offsets.
@@ -180,10 +186,11 @@ written by strangers. Both are data.
   pecker-drum. Default model: `deepseek/deepseek-v4.1-flash`. Providers can be pinned or excluded in
   the config. If no endpoint satisfies the settings, the run stops with a clear error.
 - `--model` is required: `fake:<script>` for tests and self-tests, `openrouter` or
-  `openrouter:<id>` for live runs. Only a live `--model` opens `./.env`, and only these names are read
-  from it: `OPENROUTER_API_KEY`, `TAP_OPENROUTER_MODEL`, `GITHUB_TOKEN` (optional, public data only,
-  raises the advisory API rate limit), `NVD_API_KEY` (optional). Environment beats `.env`. Values
-  never appear in output (same rules as pecker-drum's ADR 0007).
+  `openrouter:<id>` for live runs. `./.env` is opened only when a live switch is set, and each switch
+  unlocks only its own names: `--model openrouter` reads `OPENROUTER_API_KEY` and
+  `TAP_OPENROUTER_MODEL`; `--online` reads `GITHUB_TOKEN` (optional, public data only, raises the
+  advisory API rate limit) and `NVD_API_KEY` (optional). Other entries are skipped with a warning.
+  Environment beats `.env`. Values never appear in output (same rules as pecker-drum's ADR 0007).
 - **Cost cap** per run, default 0.50 USD (`--max-cost`). The cost of each call comes from OpenRouter's
   reported usage; the run stops before a call that could cross the cap and says how far it got.
 

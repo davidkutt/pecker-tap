@@ -14,7 +14,8 @@ These rules apply to every coding agent in this repository (Cursor, Pi/nest and 
 - Never push to `main`. Every change, including docs, goes through a pull request from a new branch.
   Never merge, approve, close or comment on pull requests.
 - Stop when the brief's acceptance checks pass. One pull request per milestone, with the report
-  tables in its description.
+  tables in its description. That pull request also sets the README's status line to the next
+  milestone ("V1 done; V2 is next", with the link to its brief).
 - If the brief and the spec disagree, or a decision isn't covered, stop and ask. Record real decisions
   as ADRs in `docs/adr/` (next free number).
 - No destructive git steps (force push, `reset --hard`, history rewrites) without David's explicit OK.
@@ -54,7 +55,10 @@ examples) and web pages written by strangers. `fixtures/` contains such text too
 - Never run live models or live fetches; David does. Tests use fake models and recorded responses.
 - Synthetic fixtures use CVE IDs from the year 2099 (`CVE-2099-0001`), GHSA IDs made of the digits
   0 and 1 (`GHSA-0000-0000-0001`; real GHSA IDs never use those digits), product names that don't
-  exist and reserved domains (`*.example`, `*.invalid`).
+  exist and reserved domains (`*.example`, `*.invalid`). Where the code needs a real host pattern
+  (repository advisory URLs on `github.com`, API URLs), fixtures use owner names starting with
+  `tap-fixture-` (`https://github.com/tap-fixture-acme/sdk/security/advisories/GHSA-0000-0000-0001`).
+  Such URLs are never fetched: tests block the network.
 - Never name David's employer, bug bounty customers or programs from David's notes. David is
   "David" / `davidkutt` only.
 
