@@ -1,0 +1,41 @@
+# Claims fake:fixtures returns for this note (the extractor's flat shape).
+- first_line: 12
+  last_line: 12
+  quote: GHSA-0000-0000-0001 (CVE-2099-0001) is a path traversal in the npm package quillmoss-sdk
+  text: GHSA-0000-0000-0001 is the advisory for a path traversal in quillmoss-sdk, alias CVE-2099-0001.
+  type: identifier
+  entities: {ghsa: [GHSA-0000-0000-0001], cve: [CVE-2099-0001]}
+  value: {id: GHSA-0000-0000-0001, product: quillmoss-sdk, aliases: [CVE-2099-0001]}
+- first_line: 13
+  last_line: 13
+  quote: It is fixed in 3.8.0
+  text: GHSA-0000-0000-0001 is fixed in quillmoss-sdk 3.8.0.
+  type: version
+  entities: {ghsa: [GHSA-0000-0000-0001]}
+  value: {fixed: 3.8.0}
+- first_line: 17
+  last_line: 17
+  quote: GitHub rates it high with CVSS 3.1 base score 7.5
+  text: GHSA-0000-0000-0001 is rated high with a CVSS 3.1 base score of 7.5.
+  type: severity
+  entities: {ghsa: [GHSA-0000-0000-0001]}
+  value: {label: high, cvss_version: "3.1", score: 7.5}
+- first_line: 18
+  last_line: 18
+  quote: The weakness is CWE-22
+  text: GHSA-0000-0000-0001 is a CWE-22 weakness.
+  type: weakness
+  entities: {ghsa: [GHSA-0000-0000-0001]}
+  value: {cwe: [CWE-22]}
+- first_line: 22
+  last_line: 22
+  quote: The advisory was published in 2099-01
+  text: GHSA-0000-0000-0001 was published in January 2099.
+  type: date
+  entities: {ghsa: [GHSA-0000-0000-0001]}
+  value: {kind: published, date: 2099-01}
+- first_line: 23
+  last_line: 23
+  quote: The maintainers thank an external researcher for the report
+  text: The quillmoss-sdk maintainers credit an external researcher.
+  type: prose

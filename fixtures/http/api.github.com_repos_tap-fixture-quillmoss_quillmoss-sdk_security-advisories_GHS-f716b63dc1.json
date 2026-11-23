@@ -1,0 +1,12 @@
+{
+  "body_file": "api.github.com_repos_tap-fixture-quillmoss_quillmoss-sdk_security-advisories_GHS-f716b63dc1.body",
+  "fetched_at": "2099-02-01T10:00:00Z",
+  "final_url": "https://api.github.com/repos/tap-fixture-quillmoss/quillmoss-sdk/security-advisories/GHSA-0000-0000-0001",
+  "headers": {
+    "content-type": "application/json; charset=utf-8"
+  },
+  "redirects": [],
+  "sha256": "3e9eceea7acd63177d1ca85c6b30d64167f82ef84532d5064935b54ed95bcb27",
+  "status": 200,
+  "url": "https://api.github.com/repos/tap-fixture-quillmoss/quillmoss-sdk/security-advisories/GHSA-0000-0000-0001"
+}

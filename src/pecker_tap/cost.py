@@ -6,7 +6,9 @@ it is the prompt's input tokens plus the maximum output tokens at list price. In
 estimated generously (one token per three characters). After the call the reservation is replaced
 by the cost OpenRouter reports, or by tokens times list price when no cost comes back.
 
-Calls run concurrently, so reservations of calls still in flight count as spent.
+Calls run concurrently, so reservations of calls still in flight count as spent. Every call is
+appended to the run's ledger (``calls.jsonl``) as soon as it returns, so a resumed run knows what
+was already spent even when the interrupted step's results were lost.
 """
 
 from __future__ import annotations
@@ -14,6 +16,7 @@ from __future__ import annotations
 import asyncio
 import math
 from collections.abc import Iterable
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
@@ -53,8 +56,10 @@ class CostMeter:
         price: Price | None,
         max_output_tokens: int,
         earlier_calls: Iterable[CallRecord] = (),
+        ledger: Path | None = None,
     ) -> None:
         self.cap_usd = cap_usd
+        self.ledger = ledger
         self.price = price
         self.max_output_tokens = max_output_tokens
         self.calls: list[CallRecord] = list(earlier_calls)
@@ -91,3 +96,20 @@ class CostMeter:
         self._pending = max(0.0, self._pending - reserved)
         if record is not None:
             self.calls.append(record)
+            if self.ledger is not None:
+                self.ledger.parent.mkdir(parents=True, exist_ok=True)
+                with self.ledger.open("a", encoding="utf-8") as handle:
+                    handle.write(record.model_dump_json() + "\n")
+
+
+def read_ledger(path: Path) -> list[CallRecord]:
+    """Every call recorded in a run's ledger (``calls.jsonl``); unreadable lines are skipped."""
+    if not path.is_file():
+        return []
+    calls: list[CallRecord] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        try:
+            calls.append(CallRecord.model_validate_json(line))
+        except ValueError:
+            continue
+    return calls

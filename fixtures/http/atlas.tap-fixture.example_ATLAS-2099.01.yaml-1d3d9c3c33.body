@@ -1,0 +1,39 @@
+# Synthetic ATLAS release for the pecker-tap self-test. Not MITRE data.
+format-version: 6.1.0
+collection:
+  id: synthetic-atlas
+  name: Synthetic ATLAS (fixture)
+  version: '2099.01'
+matrices:
+- id: ATLAS
+  name: Synthetic matrix
+  tactics:
+  - id: AML.TA9901
+    name: Synthetic Initial Access
+    object-type: tactic
+  - id: AML.TA9902
+    name: Synthetic Discovery
+    object-type: tactic
+  techniques:
+  - id: AML.T9901
+    name: Synthetic Prompt Injection
+    object-type: technique
+    tactics:
+    - AML.TA9901
+  - id: AML.T9901.001
+    name: Synthetic Indirect Prompt Injection
+    object-type: technique
+    subtechnique-of: AML.T9901
+  - id: AML.T9902
+    name: Synthetic Model Probing
+    object-type: technique
+    tactics:
+    - AML.TA9902
+case-studies:
+- id: AML.CS9901
+  name: Synthetic assistant case study
+  object-type: case-study
+  procedure:
+  - tactic: AML.TA9901
+    technique: AML.T9901.001
+    description: A fictional assistant reads a page with hidden instructions (AML.T9901.001).

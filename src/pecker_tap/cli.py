@@ -40,11 +40,11 @@ from langchain_core.language_models import BaseChatModel
 
 from pecker_tap import __version__
 from pecker_tap.config import Config, ConfigError, Price, config_digest, load_config
-from pecker_tap.cost import CostMeter
+from pecker_tap.cost import CostMeter, read_ledger
 from pecker_tap.envfile import EnvFileError, EnvFileResult, load_env_file
 from pecker_tap.evidence.atlas import AtlasSource
 from pecker_tap.evidence.http import HttpClient
-from pecker_tap.graph.run import RunDeps, earlier_calls, run_graph
+from pecker_tap.graph.run import LEDGER_FILE, RunDeps, run_graph
 from pecker_tap.llm import (
     OPENROUTER_KEY_ENV,
     OPENROUTER_MODEL_ENV,
@@ -346,9 +346,13 @@ def _run(args: argparse.Namespace) -> int:
     write_run_record(run_dir, info)
 
     async def go() -> tuple[RunResult | None, bool]:
-        earlier = await earlier_calls(run_dir, run_id) if settings.resume else []
+        ledger = run_dir / LEDGER_FILE
         meter = CostMeter(
-            settings.max_cost, price, settings.config.model.max_output_tokens, earlier
+            settings.max_cost,
+            price,
+            settings.config.model.max_output_tokens,
+            read_ledger(ledger) if settings.resume else [],
+            ledger=ledger,
         )
         deps = RunDeps(
             notes_dir=settings.notes,

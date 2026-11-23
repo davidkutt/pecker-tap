@@ -163,7 +163,7 @@ def judge(label: str, obs: Sequence[Obs], note_value: str, text: str, key: str) 
         warnings=warnings,
     )
     if len(accepted) == len(obs):
-        base.note = f"{_sources(obs)} state the {label} as {first.display}."
+        base.note = f"The {label} is {first.display} in {_sources(obs)}."
         return base
     conflict = list(
         {(o.url, o.display): ConflictValue(source_url=o.url, value=o.display) for o in obs}.values()
@@ -173,7 +173,7 @@ def judge(label: str, obs: Sequence[Obs], note_value: str, text: str, key: str) 
         if len(distinct) == 1:
             base.correct_value = {key: first.value}
             base.note = (
-                f"The note says {note_value}; {_sources(obs)} state the {label} as {first.display}."
+                f"The note says {note_value}; the {label} is {first.display} in {_sources(obs)}."
             )
         else:
             base.conflict = conflict
@@ -191,8 +191,8 @@ def judge(label: str, obs: Sequence[Obs], note_value: str, text: str, key: str) 
     base.conflict = conflict
     base.unrecorded_conflict = not recorded
     base.note = (
-        f"{_sources(accepted)} state the {label} as {first.display}; "
-        f"{_sources([o for o in obs if not o.accepts])} state {', '.join(others)}. "
+        f"The {label} is {first.display} in {_sources(accepted)} but {', '.join(others)} in "
+        f"{_sources([o for o in obs if not o.accepts])}. "
         + ("The note records the conflict." if recorded else "The note doesn't record it.")
     )
     return base
@@ -548,7 +548,7 @@ def identifier_decision(
         first = own[0]
         return Decision(
             "contradicted",
-            note=f"{_sources_rec(own)} mark {value.id} as withdrawn or rejected.",
+            note=f"{value.id} is marked withdrawn or rejected in {_sources_rec(own)}.",
             source_url=first.url,
             source_field="withdrawn",
             evidence=escape_excerpt(f"{value.id}: withdrawn"),
@@ -559,7 +559,7 @@ def identifier_decision(
     parts.append(
         Decision(
             "verified",
-            note=f"{_sources_rec(live)} have a record for {value.id}.",
+            note=f"There is a record for {value.id} in {_sources_rec(live)}.",
             source_url=first.url,
             source_field="ids",
             evidence=escape_excerpt(f"id: {value.id}"),

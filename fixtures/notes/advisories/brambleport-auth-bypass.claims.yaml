@@ -1,0 +1,19 @@
+# No entities on purpose: the advisory comes from the frontmatter (it names exactly one).
+- first_line: 8
+  last_line: 8
+  quote: fixed in 2.4.1
+  text: The brambleport authentication bypass is fixed in 2.4.1.
+  type: version
+  value: {fixed: 2.4.1, package: brambleport}
+- first_line: 9
+  last_line: 9
+  quote: It scores CVSS 3.1 9.1 (critical)
+  text: The brambleport authentication bypass has a CVSS 3.1 score of 9.1, critical.
+  type: severity
+  value: {label: critical, cvss_version: "3.1", score: 9.1}
+- first_line: 10
+  last_line: 10
+  quote: The weakness is CWE-287
+  text: The brambleport authentication bypass is a CWE-287 weakness.
+  type: weakness
+  value: {cwe: [CWE-287]}

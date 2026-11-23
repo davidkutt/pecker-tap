@@ -9,12 +9,16 @@ a GHSA record already lists as an alias needs no second GitHub search. Every cla
 by code in its own ``compare`` task.
 
 A SQLite checkpointer in the run folder saves every step: an interrupted run continues with
-``--resume <run_id>`` and finished tasks are not repeated. Runtime objects (the model, the HTTP
+``--resume <run_id>``. Because Ctrl-C can lose the results of tasks that finished inside the
+interrupted step, each note's finished extraction is also saved in ``extractions/`` and reused on
+resume, and every model call goes into ``calls.jsonl`` the moment it returns (the cost meter and
+the report read it). Lookups replay from the run's HTTP cache. Runtime objects (the model, the HTTP
 client, the cost meter) live outside the state; the state holds only JSON-ready data.
 """
 
 from __future__ import annotations
 
+import hashlib
 import operator
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
@@ -30,7 +34,7 @@ from langgraph.types import Send
 from pecker_tap.claims.extract import NoteExtraction, RunControl, assign_claim_ids, extract_note
 from pecker_tap.claims.patterns import find_ids
 from pecker_tap.claims.schema import Claim, TaxonomyClaim, advisory_ids, claim_from_dict
-from pecker_tap.cost import CallRecord, CostMeter
+from pecker_tap.cost import CallRecord, CostMeter, read_ledger
 from pecker_tap.evidence.advisories import lookup_advisory, repo_hints
 from pecker_tap.evidence.atlas import AtlasSource
 from pecker_tap.evidence.http import HttpClient
@@ -42,6 +46,9 @@ from pecker_tap.verdict.entry import PackEntry
 from pecker_tap.verdict.findings import missing_facts, named_advisories
 
 CHECKPOINT_FILE = "checkpoint.sqlite"
+EXTRACTIONS_DIR = "extractions"
+"""One file per note whose extraction finished; ``--resume`` reuses them (no second model call)."""
+LEDGER_FILE = "calls.jsonl"
 
 
 def _merge(left: dict[str, Any] | None, right: dict[str, Any] | None) -> dict[str, Any]:
@@ -144,6 +151,9 @@ def build_graph(deps: RunDeps) -> Any:
 
     async def extract(payload: dict[str, Any]) -> dict[str, Any]:
         note = Note.model_validate(payload["note"])
+        saved = _saved_extraction(deps.run_dir, note)
+        if saved is not None:
+            return {"extractions": [saved.model_dump(mode="json")]}
         result = await extract_note(
             note,
             model=deps.model,
@@ -151,6 +161,7 @@ def build_graph(deps: RunDeps) -> Any:
             meter=deps.meter,
             control=deps.control,
         )
+        _save_extraction(deps.run_dir, note, result)
         return {"extractions": [result.model_dump(mode="json")]}
 
     async def number_claims(state: RunState) -> dict[str, Any]:
@@ -253,6 +264,31 @@ def build_graph(deps: RunDeps) -> Any:
     return graph
 
 
+def _extraction_path(run_dir: Path, note: Note) -> Path:
+    digest = hashlib.sha256(f"{note.path}\n{note.text}".encode()).hexdigest()[:20]
+    return run_dir / EXTRACTIONS_DIR / f"{digest}.json"
+
+
+def _saved_extraction(run_dir: Path, note: Note) -> NoteExtraction | None:
+    """A finished extraction of this exact note text; stopped ones are done again."""
+    path = _extraction_path(run_dir, note)
+    if not path.is_file():
+        return None
+    try:
+        saved = NoteExtraction.model_validate_json(path.read_text(encoding="utf-8"))
+    except ValueError:
+        return None
+    return saved if saved.stop_reason is None and saved.note_path == note.path else None
+
+
+def _save_extraction(run_dir: Path, note: Note, result: NoteExtraction) -> None:
+    path = _extraction_path(run_dir, note)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    partial = path.with_suffix(".partial")
+    partial.write_text(result.model_dump_json(), encoding="utf-8")
+    partial.replace(path)
+
+
 def _related(wanted: set[str], lookups: Mapping[str, Any]) -> dict[str, Any]:
     """The lookups for ``wanted`` plus every lookup of an ID their records name."""
     keys = set(wanted)
@@ -293,7 +329,11 @@ def collect_result(state: RunState, deps: RunDeps) -> RunResult:
         )
         for key, lookup in sorted(lookups.items())
     ]
-    calls: list[CallRecord] = [c for e in extractions for c in e.calls]
+    ledger = read_ledger(deps.run_dir / LEDGER_FILE)
+    calls: list[CallRecord] = ledger or [c for e in extractions for c in e.calls]
+    # The ledger is in completion order; sort it like the notes (a call repeated after an
+    # interruption stays in: it was paid for).
+    calls.sort(key=lambda c: (order.get(c.note_path, len(order)), c.section))
     return RunResult(
         notes=len(notes),
         entries=[*entries, *findings],
@@ -318,23 +358,6 @@ class GraphOutcome:
     result: RunResult | None
     resumed: bool
     already_finished: bool
-
-
-async def earlier_calls(run_dir: Path, run_id: str) -> list[CallRecord]:
-    """Model calls a stopped run already paid for (from its checkpoint), for the cost meter."""
-    db = run_dir / CHECKPOINT_FILE
-    if not db.is_file():
-        return []
-    async with AsyncSqliteSaver.from_conn_string(str(db)) as saver:
-        builder: Any = StateGraph(RunState)
-        graph: Any = builder.compile(checkpointer=saver)
-        snapshot = await graph.aget_state(cast("Any", {"configurable": {"thread_id": run_id}}))
-        values = cast("dict[str, Any]", snapshot.values or {})
-    return [
-        CallRecord.model_validate(call)
-        for extraction in values.get("extractions", [])
-        for call in extraction.get("calls", [])
-    ]
 
 
 async def run_graph(deps: RunDeps, *, resume: bool, concurrency: int) -> GraphOutcome:
