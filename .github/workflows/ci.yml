@@ -1,0 +1,90 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.13"
+          enable-cache: true
+      - name: Install
+        run: uv sync --locked
+      - name: Lint
+        run: uv run ruff check .
+      - name: Format check
+        run: uv run ruff format --check .
+      - name: Types
+        run: uv run pyright
+      - name: Tests
+        run: uv run pytest
+      # The self-test runs offline on the synthetic notes and recorded API responses, then must
+      # reproduce fixtures/expected/ exactly (ignoring run ids, timestamps and the notes SHA).
+      - name: Self-test (fake:fixtures)
+        run: >-
+          uv run tap run --notes fixtures/notes --model fake:fixtures --sources fixtures/http
+          --out "$RUNNER_TEMP/runs"
+      - name: Compare with fixtures/expected
+        run: uv run python tools/golden.py "$RUNNER_TEMP/runs"
+
+  audit:
+    # Known vulnerabilities in every locked dependency, dev tools included. The tool versions in
+    # the run lines are pinned by hand (docs/dependencies.md); Dependabot does not update them.
+    name: audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.13"
+          enable-cache: false
+      - name: Export locked dependencies
+        run: >-
+          uv export --frozen --format requirements-txt --no-emit-project
+          --output-file "$RUNNER_TEMP/requirements.txt"
+      - name: Audit with pip-audit
+        run: |
+          # The ignore list (tools/audit_ignores.toml) needs a reason and an expiry per entry.
+          ignores="$(uv run --no-project tools/audit_ignores.py)"
+          # One --ignore-vuln=<id> per word, so $ignores stays unquoted on purpose.
+          # shellcheck disable=SC2086
+          uvx pip-audit@2.10.1 --strict --disable-pip --require-hashes --progress-spinner off \
+            --requirement "$RUNNER_TEMP/requirements.txt" $ignores
+
+  zizmor:
+    # Workflow and Dependabot lint. The job token (contents: read) enables zizmor's online audits,
+    # for example that every pinned SHA belongs to its action's repository.
+    name: zizmor
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.13"
+          enable-cache: false
+      - name: Lint workflows and Dependabot config
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uvx zizmor@1.32.0 --persona pedantic --min-severity low .github/

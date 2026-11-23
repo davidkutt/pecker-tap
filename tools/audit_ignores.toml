@@ -1,0 +1,11 @@
+# Known vulnerabilities the pip-audit job may skip. Checked by tools/audit_ignores.py.
+#
+# Every entry needs an id (as pip-audit reports it), a reason and an expiry date at most 90 days
+# ahead. An expired entry fails the audit job, so the decision comes back for review. Example:
+#
+# [[ignore]]
+# id = "GHSA-xxxx-xxxx-xxxx"
+# reason = "Only reachable through the X parser, which pecker-tap never calls; fix due in 1.2.3."
+# expires = 2027-02-15
+
+ignore = []
