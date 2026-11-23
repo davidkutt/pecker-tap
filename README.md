@@ -5,7 +5,7 @@ atomic claims, checks every claim against primary sources, and writes a verifica
 what holds, what a primary source contradicts, which official facts are missing, and what can't be
 settled without guessing.
 
-**Status:** planning done; V1 is next ([brief](docs/milestones/V1.md)).
+**Status:** V1 done; V2 is next ([brief](docs/milestones/V2.md)).
 
 ## Why
 
@@ -37,6 +37,19 @@ proposed correction before anything is handed back to the research loop.
 
 Details: [docs/spec.md](docs/spec.md). Milestones: [V1](docs/milestones/V1.md),
 [V2](docs/milestones/V2.md), [V3](docs/milestones/V3.md).
+
+## Try it
+
+The self-test runs offline on synthetic notes and recorded API responses (the same command works
+in bash and fish):
+
+```bash
+uv sync
+uv run tap run --notes fixtures/notes --model fake:fixtures --sources fixtures/http --out /tmp/tap-runs
+```
+
+It writes `pack.yaml`, `summary.md`, `report.json` and `run.json` into a run folder under the
+`--out` folder (default `private/runs/`).
 
 ## Data
 

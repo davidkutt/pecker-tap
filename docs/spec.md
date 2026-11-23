@@ -1,6 +1,7 @@
 # pecker-tap spec
 
-Status: draft, 23 November 2026. Written in the planning chat before V1; no ADRs yet except 0001.
+Status: draft, 23 November 2026. Written in the planning chat before V1; V1 added what the build
+decided (claim values, comparison details, run folder, resume) and ADR 0002.
 
 ## Purpose
 
@@ -36,8 +37,19 @@ commit SHA. The verifier never writes to that checkout and never talks to GitHub
 | `report.json` | Everything in machine-readable form, including per-call model usage and cost. |
 | `run.json` | Run record: notes SHA, selection, model, settings digest, timings, errors. |
 | `delta.md` (V3) | Corrections David approved, as a request to the research bot. |
+| `cache/` | Every HTTP response the run used, in the `--sources` format, so the run can be replayed. |
+| `extractions/` | One file per note whose extraction finished; `--resume` reuses them. |
+| `calls.jsonl` | Every model call, written the moment it returns (cost meter and report read it). |
+| `checkpoint.sqlite` | LangGraph checkpoints for `--resume`. |
 
 Run folders hold full note text and source excerpts, so they live under `private/` by default.
+`--out` is the parent of run folders; the run id is the start time in UTC plus six characters of the
+settings digest (`20261123T120000Z-1a2b3c`).
+
+**Exit codes:** 0 finished; 1 finished with rejected claims, notes that failed to parse or failed
+model calls; 2 setup error (including an OpenRouter endpoint that refuses the run's settings);
+3 stopped by the cost cap (partial pack written); 130 interrupted by Ctrl-C (resumable). When several
+apply, the highest wins.
 
 ## Claims
 
@@ -52,8 +64,22 @@ A claim is one atomic, checkable statement taken from a note.
   type: version                         # see the type table
   entities: {ghsa: [GHSA-xxxx-xxxx-xxxx], cve: [], atlas: [], owasp: [], urls: []}
   cited_urls: ["https://github.com/example/sdk/security/advisories/GHSA-xxxx-xxxx-xxxx"]
-  value: {fixed: "3.7.0"}               # normalised value for structured types; null for prose
+  value: {fixed: "3.7.0", package: null} # typed per claim type (table below); null for prose
 ```
+
+The claim is a discriminated union over `type`; each structured type has its own `value` model and
+unknown fields are rejected:
+
+| Type | `value` |
+| --- | --- |
+| `identifier` | `id` (CVE or GHSA), `product`, `aliases` (other IDs the note gives) |
+| `severity` | at least one of `label` (low, medium, high, critical; GitHub's "moderate" is medium), `cvss_version` (2.0, 3.0, 3.1, 4.0), `score`, `vector` |
+| `weakness` | `cwe`: one or more CWE IDs |
+| `version` | exactly one of `fixed`, `affected` (a range in comparator form, `>= 2.0.0, < 3.8.0`) or `no_fix: true`; `package` if the note names it |
+| `date` | `kind` (published, updated, fixed, disclosed, reported) and `date` (`YYYY`, `YYYY-MM` or `YYYY-MM-DD`, as precise as the note) |
+| `product` | at least one of `product`, `vendor`, `package` |
+| `taxonomy` | `framework` (atlas or owasp), `id`, `name`, `tactic` |
+| `scope_payout`, `prose`, `decision` | `null` |
 
 | Type | Examples | Checked by |
 | --- | --- | --- |
@@ -68,9 +94,14 @@ A claim is one atomic, checkable statement taken from a note.
 | `prose` | what a write-up or spec says | judge |
 | `decision` | items the note marks as David's decision | never checked; listed as decisions |
 
-**Extraction** is an LLM step with structured output, one call per note section. Code rejects any
-claim whose `quote` is not an exact substring of the note at the given lines, so the extractor can't
-invent claims. Notes marked `decision: awaiting-david` yield only `decision` entries.
+**Extraction** is an LLM step with structured output, one call per note section (a forced tool call
+with a flat, permissive schema). Code then checks each claim on its own, and the first failing check
+names the rejection: the shape (unknown fields rejected), a known `type`, `lines` inside the note,
+`quote` an exact substring of those lines, every ID in `entities` and in the value matching its
+pattern **and written in the note**, every URL in `entities` and `cited_urls` written in the note,
+and the typed value. So the extractor can't invent claims, IDs or sources. Rejected claims are
+listed in the report, never kept. Notes marked `decision: awaiting-david` yield one `decision` entry
+per section without a model call.
 
 ## Statuses
 
@@ -123,7 +154,38 @@ Rules that decide between them:
 ```
 
 Field names that also exist in Wren's packs (`claim_id`, `status`, `note_path`, `source_url`, and
-`note` for free text) keep Wren's names and meaning, so packs can be compared field by field.
+`note` for free text) keep Wren's names and meaning, so packs can be compared field by field. Extra
+fields: `type` (the claim type; `advisory` for `n-NNNN` entries), `source_field` (the field of the
+source the verdict used) and `warnings` (for example a version compared as a plain string). Entries
+come in claim order, `c-NNNN-n1` right after its claim, then the `n-NNNN` entries.
+
+### How code compares
+
+- **Which advisory:** the claim's own IDs; otherwise the note's frontmatter if its IDs name exactly
+  one advisory (a GHSA and its CVE count as one); otherwise `unclear` / `ambiguous`.
+- **Observations:** one per source that states the claim's field. Every source accepts the note's
+  value: `verified`. None does: `contradicted`, with `correct_value` when the sources agree and every
+  value in `conflict` when they don't. Some do: rule 3. The note **records the conflict** when every
+  other value is written in the claim's section.
+- **Severity and identifier claims** check each stated part (label, score, vector; existence,
+  product, aliases) the same way: any part contradicted makes the claim contradicted, all parts
+  verified make it verified, anything else stays unclear. A score without `cvss_version` is
+  compared with CVSS 3.x, else 4.0, else 2.0.
+- **Versions:** PEP 440 for pip, semantic versions for npm, crates.io, Go, NuGet and Composer
+  (`3.8` equals `3.8.0`); other ecosystems as plain strings, with a warning. Ranges compare as sets
+  of constraints. With several packages and no `package` in the claim: `unclear` / `ambiguous`.
+- **Dates** match at the note's precision on the UTC day of the source timestamp. Only `published`
+  and `updated` have structured sources (GitHub records for a GHSA, CVE.org and NVD for a CVE);
+  the other kinds stay `unclear` / `not_checked` until the judge (V2).
+- **Products** match loosely (case, spaces and punctuation ignored; one name containing the other
+  counts when the shorter has at least four characters).
+- **A 404 is not evidence** that an advisory doesn't exist (reserved CVEs, unpublished repository
+  advisories): it counts as no source. A pinned ATLAS release is complete, so an ID it doesn't
+  contain is `contradicted`.
+- **Rule 6b** counts a field as stated when the note has a kept claim of that type for the advisory
+  or the official value itself is written in the note, so a claim the extractor missed doesn't turn
+  into a false finding. Values come from the first source that has them, in the order GitHub global
+  advisory, GitHub repository advisory, CVE.org, NVD.
 
 ## Evidence
 
@@ -140,6 +202,15 @@ Evidence is gathered in this order and stops at the first source that settles th
 
 The verifier never searches the web for new sources: it checks what the note cites plus the
 structured APIs. A claim with nothing to check is `unclear` with reason `no_source`.
+
+What V1 reads from each structured source: GitHub's global record states `first_patched_version`
+explicitly (`null` means no fix); a repository advisory's empty `patched_versions` says nothing.
+CVE.org records are read from the CNA container (an ADP container's CVSS only when the CNA gives
+none); NVD records from NVD's own `Primary` metrics and weaknesses. A CVE that a GHSA record already
+lists as an alias reuses that lookup instead of searching GitHub again. The ATLAS release is
+fetched once per run, and its sha256 and `collection.version` must match the pin in
+`config/defaults.toml`; an offline `--sources` folder may pin a synthetic release instead
+(`pins.toml`, ADR 0002).
 
 **No network by default.** Without `--online`, evidence comes only from `--sources <dir>`: recorded
 fixtures, the cache of an earlier run, or a source snapshot with a manifest (`manifest.csv`: path,
@@ -164,6 +235,14 @@ load_notes ──> extract (per note) ──> fan out per claim (Send)
 - A SQLite checkpointer saves every step: a stopped run resumes, and from V3 the review step waits
   for David's answers for as long as it takes.
 - Concurrency is limited per host (API rate limits) and per model.
+- V1 runs `load_notes -> extract (Send per note) -> number_claims -> api_lookup (Send per GHSA and
+  ATLAS ID) -> lookup_cve (Send per CVE ID) -> compare (Send per claim) -> collect -> write_pack`.
+  Lookups fan out per identifier, not per claim, so claims about one advisory share one lookup.
+- Ctrl-C can lose LangGraph's writes for tasks that finished inside the interrupted step, so each
+  note's finished extraction is also saved in `extractions/` and reused, every model call goes into
+  `calls.jsonl` at once, and lookups replay from the run's cache. `--resume <run_id>` needs the
+  original `--notes`, `--paths`, `--model`, `--sources` and `--online` (the settings digest is
+  checked), so live switches stay visible on the command line. `--max-cost` may change.
 
 ## Untrusted input
 
@@ -193,6 +272,15 @@ written by strangers. Both are data.
   Environment beats `.env`. Values never appear in output (same rules as pecker-drum's ADR 0007).
 - **Cost cap** per run, default 0.50 USD (`--max-cost`). The cost of each call comes from OpenRouter's
   reported usage; the run stops before a call that could cross the cap and says how far it got.
+  Before each call, spent so far plus the most expensive call so far must stay under the cap; before
+  the first call, the prompt's input tokens (one per three characters) plus the maximum output
+  tokens at the list price in `config/defaults.toml`. Calls in flight count with their reservation.
+  A live model without a list price there is refused. In V1 the cap can only stop extraction: claims
+  already extracted are still checked by code, and the notes not reached are listed.
+- OpenRouter answers 401, 402, 403 or 404 (no endpoint with zero data retention and forced tool
+  calls) stop extraction as a setup error (exit 2); other failed calls are listed per section and
+  the run goes on. Error messages from providers are never copied into output, only their type and
+  status.
 
 Planning estimate for DeepSeek V4.1 Flash (23 November 2026, list prices): about 0.10 to 0.30 USD per
 100 claims, depending on provider and time of day. The first live run replaces this with real numbers.
