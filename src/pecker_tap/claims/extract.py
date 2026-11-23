@@ -64,6 +64,9 @@ class NoteExtraction(_Strict):
     calls: tuple[CallRecord, ...] = ()
     errors: tuple[SectionError, ...] = ()
     sections_not_reached: tuple[int, ...] = ()
+    stop_reason: StopReason | None = None
+    """Why sections were not reached: the cost cap or a model setup error."""
+    stop_message: str = ""
 
 
 @dataclass
@@ -212,6 +215,8 @@ async def extract_note(
         calls=tuple(calls),
         errors=tuple(errors),
         sections_not_reached=tuple(not_reached),
+        stop_reason=control.stop_reason if not_reached else None,
+        stop_message=control.stop_message if not_reached else "",
     )
 
 
