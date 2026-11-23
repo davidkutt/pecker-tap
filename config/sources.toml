@@ -1,0 +1,12 @@
+# Source classes (spec, Statuses rule 2). Domains listed here are secondary: press, aggregators and
+# summaries. A claim only a secondary source supports is `unclear` / `secondary_only`. Used from V2,
+# when cited pages are fetched; V1 checks structured APIs only. Subdomains match too.
+
+[secondary]
+domains = [
+    "news.ycombinator.com",
+    "reddit.com",
+    "medium.com",
+    "twitter.com",
+    "x.com",
+]
