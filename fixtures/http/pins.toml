@@ -1,0 +1,7 @@
+# Offline only (ADR 0002): runs from this folder use this synthetic ATLAS release instead of
+# the pin in config/defaults.toml. --online runs ignore this file.
+[atlas]
+release = "v2099.01-synthetic"
+url = "https://atlas.tap-fixture.example/ATLAS-2099.01.yaml"
+sha256 = "be985a68f43f5003105b09afa80ff9702e118aa974b812fd0596ef3fe41422b8"
+collection_version = "2099.01"

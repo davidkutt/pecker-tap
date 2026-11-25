@@ -1,0 +1,21 @@
+- first_line: 7
+  last_line: 7
+  quote: CVE-2099-0003 is a server-side request forgery in fernhollow-proxy
+  text: CVE-2099-0003 is a server-side request forgery in fernhollow-proxy.
+  type: identifier
+  entities: {cve: [CVE-2099-0003]}
+  value: {id: CVE-2099-0003, product: fernhollow-proxy}
+- first_line: 8
+  last_line: 8
+  quote: is fixed in 1.2.0
+  text: GHSA-0000-0000-0011 in the Go module fernhollow-proxy is fixed in 1.2.0.
+  type: version
+  entities: {ghsa: [GHSA-0000-0000-0011]}
+  value: {fixed: 1.2.0}
+# No entities and two advisories in the frontmatter: ambiguous.
+- first_line: 9
+  last_line: 9
+  quote: The issue is rated moderate
+  text: The fernhollow-proxy issue is rated moderate.
+  type: severity
+  value: {label: moderate}

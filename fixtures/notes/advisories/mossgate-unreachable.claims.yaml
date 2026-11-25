@@ -1,0 +1,14 @@
+- first_line: 6
+  last_line: 6
+  quote: is fixed in 0.9.3
+  text: GHSA-0000-0000-0100 in mossgate is fixed in 0.9.3.
+  type: version
+  entities: {ghsa: [GHSA-0000-0000-0100]}
+  value: {fixed: 0.9.3}
+- first_line: 7
+  last_line: 7
+  quote: CVE-2099-0009, was published in 2099-05
+  text: CVE-2099-0009 was published in May 2099.
+  type: date
+  entities: {cve: [CVE-2099-0009]}
+  value: {kind: published, date: 2099-05}

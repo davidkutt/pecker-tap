@@ -1,0 +1,69 @@
+# pecker-tap defaults (spec, Model and settings; V1 brief). Read by src/pecker_tap/config.py.
+
+[model]
+# Model for a bare `--model openrouter` when TAP_OPENROUTER_MODEL is empty.
+default = "deepseek/deepseek-v4.1-flash"
+max_output_tokens = 4096
+temperature = 0.0
+timeout_s = 120
+# Model calls running at the same time (extraction: one call per note section).
+concurrency = 4
+# OpenRouter provider routing; provider.zdr = true is always added and cannot be switched off.
+# `only` / `ignore` pin or exclude providers by name.
+providers_only = []
+providers_ignore = []
+
+# List prices in USD per million tokens. Only used for the cost cap before the first call of a
+# run (input tokens plus max_output_tokens at list price); after that the cap uses OpenRouter's
+# reported cost. A live model without a price here is refused.
+[model.prices."deepseek/deepseek-v4.1-flash"]
+# OpenRouter model page, looked up on 23 November 2026; providers range up to 0.375 / 1.50.
+input_per_mtok = 0.30
+output_per_mtok = 1.20
+
+[http]
+user_agent = "pecker-tap/0.1 (claim verifier; https://github.com/davidkutt/pecker-tap)"
+connect_timeout_s = 10
+read_timeout_s = 20
+# Wall-clock limit for one fetch, redirects and retries included.
+total_timeout_s = 90
+max_redirects = 5
+max_retries = 3
+backoff_s = 1.0
+max_retry_after_s = 60
+
+[http.size_caps]
+# Response size caps in bytes, per source.
+default = 2_000_000
+atlas = 4_000_000
+
+# Per-host rate limits as token buckets: `requests` per `per_seconds`, with bursts up to
+# `requests`. `with_key` applies when the host's key is set (GITHUB_TOKEN, NVD_API_KEY).
+[rate_limits."api.github.com"]
+# GitHub REST API primary limits: 60 requests per hour unauthenticated, 5000 with a token.
+requests = 60
+per_seconds = 3600
+with_key = 5000
+
+[rate_limits."services.nvd.nist.gov"]
+# NVD API 2.0: 5 requests per rolling 30 seconds, 50 with an API key.
+requests = 5
+per_seconds = 30
+with_key = 50
+
+[rate_limits."cveawg.mitre.org"]
+# CVE Services publishes no read limit (API docs, 23 November 2026); a conservative default.
+requests = 5
+per_seconds = 5
+
+[rate_limits.default]
+requests = 2
+per_seconds = 2
+
+[atlas]
+# Pinned in the planning chat on 23 November 2026 (V1 brief, deliverable 6). The loader checks
+# the sha256 and the collection version; the agent never fetches it.
+release = "v2026.10"
+url = "https://raw.githubusercontent.com/mitre-atlas/atlas-data/v2026.10/dist/v6/ATLAS-2026.10.yaml"
+sha256 = "ac41ee9f99a47084ba5fdfc77ae83a28687e12390240fffeb37df7914ffe142d"
+collection_version = "2026.10"

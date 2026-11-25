@@ -1,0 +1,33 @@
+- first_line: 6
+  last_line: 6
+  quote: AML.T9901 is Synthetic Prompt Injection, under the tactic Synthetic Initial Access
+  text: ATLAS technique AML.T9901 is Synthetic Prompt Injection, under the tactic Synthetic Initial Access.
+  type: taxonomy
+  entities: {atlas: [AML.T9901]}
+  value: {framework: atlas, id: AML.T9901, name: Synthetic Prompt Injection, tactic: Synthetic Initial Access}
+- first_line: 7
+  last_line: 7
+  quote: AML.T9901.001 is Synthetic Indirect Prompt Injection
+  text: ATLAS sub-technique AML.T9901.001 is Synthetic Indirect Prompt Injection.
+  type: taxonomy
+  entities: {atlas: [AML.T9901.001]}
+  value: {framework: atlas, id: AML.T9901.001, name: Synthetic Indirect Prompt Injection}
+- first_line: 8
+  last_line: 8
+  quote: AML.T9999 covers synthetic data theft
+  text: ATLAS technique AML.T9999 covers synthetic data theft.
+  type: taxonomy
+  entities: {atlas: [AML.T9999]}
+  value: {framework: atlas, id: AML.T9999}
+- first_line: 9
+  last_line: 9
+  quote: OWASP lists prompt injection as LLM01:2025
+  text: OWASP lists prompt injection as LLM01:2025.
+  type: taxonomy
+  entities: {owasp: ["LLM01:2025"]}
+  value: {framework: owasp, id: "LLM01:2025", name: Prompt Injection}
+- first_line: 10
+  last_line: 10
+  quote: Indirect injections hide instructions in content the model reads later
+  text: Indirect prompt injections hide instructions in content the model reads later.
+  type: prose

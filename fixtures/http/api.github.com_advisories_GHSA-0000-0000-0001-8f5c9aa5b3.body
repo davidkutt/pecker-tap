@@ -1,0 +1,58 @@
+{
+  "ghsa_id": "GHSA-0000-0000-0001",
+  "cve_id": "CVE-2099-0001",
+  "url": "https://api.github.com/advisories/GHSA-0000-0000-0001",
+  "html_url": "https://github.com/advisories/GHSA-0000-0000-0001",
+  "repository_advisory_url": "https://api.github.com/repos/tap-fixture-quillmoss/quillmoss-sdk/security-advisories/GHSA-0000-0000-0001",
+  "summary": "Path traversal in quillmoss-sdk (synthetic)",
+  "description": "Synthetic advisory for the pecker-tap self-test. Not a real vulnerability.",
+  "type": "reviewed",
+  "severity": "high",
+  "source_code_location": "https://github.com/tap-fixture-quillmoss/quillmoss-sdk",
+  "identifiers": [
+    {
+      "value": "GHSA-0000-0000-0001",
+      "type": "GHSA"
+    },
+    {
+      "value": "CVE-2099-0001",
+      "type": "CVE"
+    }
+  ],
+  "references": [
+    "https://github.com/tap-fixture-quillmoss/quillmoss-sdk/security/advisories/GHSA-0000-0000-0001"
+  ],
+  "published_at": "2099-01-15T10:00:00Z",
+  "updated_at": "2099-02-01T09:00:00Z",
+  "github_reviewed_at": "2099-01-15T10:00:00Z",
+  "nvd_published_at": null,
+  "withdrawn_at": null,
+  "vulnerabilities": [
+    {
+      "package": {
+        "ecosystem": "npm",
+        "name": "quillmoss-sdk"
+      },
+      "vulnerable_version_range": "< 3.8.0",
+      "first_patched_version": "3.8.0",
+      "vulnerable_functions": []
+    }
+  ],
+  "cvss_severities": {
+    "cvss_v3": {
+      "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+      "score": 7.5
+    },
+    "cvss_v4": {
+      "vector_string": null,
+      "score": 0.0
+    }
+  },
+  "cwes": [
+    {
+      "cwe_id": "CWE-22",
+      "name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+    }
+  ],
+  "credits": []
+}

@@ -1,0 +1,12 @@
+{
+  "body_file": "atlas.tap-fixture.example_ATLAS-2099.01.yaml-1d3d9c3c33.body",
+  "fetched_at": "2099-02-01T10:00:00Z",
+  "final_url": "https://atlas.tap-fixture.example/ATLAS-2099.01.yaml",
+  "headers": {
+    "content-type": "text/plain; charset=utf-8"
+  },
+  "redirects": [],
+  "sha256": "be985a68f43f5003105b09afa80ff9702e118aa974b812fd0596ef3fe41422b8",
+  "status": 200,
+  "url": "https://atlas.tap-fixture.example/ATLAS-2099.01.yaml"
+}

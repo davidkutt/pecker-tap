@@ -1,0 +1,45 @@
+name: text-guard
+
+# No Unicode format or control characters (except tab, LF, CR) in the commit messages, title and
+# body of a pull request (AGENTS.md). A workflow of its own, so editing the title or body
+# re-runs only this check. Event fields reach the script through env:, never inside run:.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: text-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  text-guard:
+    name: text-guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.13"
+          enable-cache: false
+      - name: Commit messages in the pull request
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: uv run --no-project tools/text_guard.py commits "$BASE_SHA" "$HEAD_SHA"
+      - name: Pull request title and body
+        if: ${{ !cancelled() }}
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          # The author decides whether the body is skipped (dependabot[bot] quotes third-party
+          # release notes). The PR author cannot be spoofed the way github.actor can.
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: uv run --no-project tools/text_guard.py pr-text

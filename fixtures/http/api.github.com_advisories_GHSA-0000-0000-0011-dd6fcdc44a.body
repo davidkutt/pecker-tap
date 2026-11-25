@@ -1,0 +1,58 @@
+{
+  "ghsa_id": "GHSA-0000-0000-0011",
+  "cve_id": "CVE-2099-0004",
+  "url": "https://api.github.com/advisories/GHSA-0000-0000-0011",
+  "html_url": "https://github.com/advisories/GHSA-0000-0000-0011",
+  "repository_advisory_url": null,
+  "summary": "SSRF in fernhollow-proxy (synthetic)",
+  "description": "Synthetic advisory for the pecker-tap self-test. Not a real vulnerability.",
+  "type": "reviewed",
+  "severity": "moderate",
+  "source_code_location": "https://github.com/tap-fixture-fernhollow/fernhollow-proxy",
+  "identifiers": [
+    {
+      "value": "GHSA-0000-0000-0011",
+      "type": "GHSA"
+    },
+    {
+      "value": "CVE-2099-0004",
+      "type": "CVE"
+    }
+  ],
+  "references": [
+    "https://github.com/tap-fixture-fernhollow/fernhollow-proxy/security/advisories/GHSA-0000-0000-0011"
+  ],
+  "published_at": "2099-04-10T07:00:00Z",
+  "updated_at": "2099-02-01T09:00:00Z",
+  "github_reviewed_at": "2099-04-10T07:00:00Z",
+  "nvd_published_at": null,
+  "withdrawn_at": null,
+  "vulnerabilities": [
+    {
+      "package": {
+        "ecosystem": "go",
+        "name": "github.com/tap-fixture-fernhollow/fernhollow-proxy"
+      },
+      "vulnerable_version_range": "< 1.2.0",
+      "first_patched_version": "1.2.0",
+      "vulnerable_functions": []
+    }
+  ],
+  "cvss_severities": {
+    "cvss_v3": {
+      "vector_string": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
+      "score": 5.3
+    },
+    "cvss_v4": {
+      "vector_string": null,
+      "score": 0.0
+    }
+  },
+  "cwes": [
+    {
+      "cwe_id": "CWE-918",
+      "name": "Server-Side Request Forgery (SSRF)"
+    }
+  ],
+  "credits": []
+}

@@ -1,0 +1,609 @@
+- claim_id: c-0001
+  status: contradicted
+  reason: null
+  note_path: advisories/brambleport-auth-bypass.md
+  lines:
+  - 8
+  - 8
+  claim: The brambleport authentication bypass is fixed in 2.4.1.
+  type: version
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+  source_field: vulnerabilities[0].first_patched_version
+  evidence: 'vulnerabilities[0].first_patched_version: 2.4.2'
+  note: The note says fixed in 2.4.1; the fixed version is 2.4.2 in GitHub global advisory, GitHub repository
+    advisory, CVE.org and NVD.
+  correct_value:
+    fixed: 2.4.2
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0002
+  status: verified
+  reason: null
+  note_path: advisories/brambleport-auth-bypass.md
+  lines:
+  - 9
+  - 9
+  claim: The brambleport authentication bypass has a CVSS 3.1 score of 9.1, critical.
+  type: severity
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+  source_field: severity
+  evidence: 'severity: critical'
+  note: The severity label is critical in GitHub global advisory, GitHub repository advisory, CVE.org
+    and NVD. The CVSS score is CVSS 3.1 9.1 in GitHub global advisory, CVE.org and NVD but CVSS 3.1 8.6
+    in GitHub repository advisory. The note doesn't record it.
+  correct_value: null
+  conflict:
+  - source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+    value: CVSS 3.1 9.1
+  - source_url: https://api.github.com/repos/tap-fixture-brambleport/brambleport/security-advisories/GHSA-0000-0000-0010
+    value: CVSS 3.1 8.6
+  - source_url: https://cveawg.mitre.org/api/cve/CVE-2099-0002
+    value: CVSS 3.1 9.1
+  - source_url: https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2099-0002
+    value: CVSS 3.1 9.1
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0002-n1
+  status: new_finding
+  reason: null
+  note_path: advisories/brambleport-auth-bypass.md
+  lines:
+  - 9
+  - 9
+  claim: 'Primary sources disagree on a value the note states without the conflict: The brambleport authentication
+    bypass has a CVSS 3.1 score of 9.1, critical.'
+  type: severity
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+  source_field: severity
+  evidence: 'https://api.github.com/advisories/GHSA-0000-0000-0010: CVSS 3.1 9.1; https://api.github.com/repos/tap-fixture-brambleport/brambleport/security-advisories/GHSA-0000-0000-0010:
+    CVSS 3.1 8.6; https://cveawg.mitre.org/api/cve/CVE-2099-0002: CVSS 3.1 9.1; https://services.nvd.nist.gov/rest/json/cves/2.0…'
+  note: The severity label is critical in GitHub global advisory, GitHub repository advisory, CVE.org
+    and NVD. The CVSS score is CVSS 3.1 9.1 in GitHub global advisory, CVE.org and NVD but CVSS 3.1 8.6
+    in GitHub repository advisory. The note doesn't record it.
+  correct_value: null
+  conflict:
+  - source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+    value: CVSS 3.1 9.1
+  - source_url: https://api.github.com/repos/tap-fixture-brambleport/brambleport/security-advisories/GHSA-0000-0000-0010
+    value: CVSS 3.1 8.6
+  - source_url: https://cveawg.mitre.org/api/cve/CVE-2099-0002
+    value: CVSS 3.1 9.1
+  - source_url: https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2099-0002
+    value: CVSS 3.1 9.1
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0003
+  status: verified
+  reason: null
+  note_path: advisories/brambleport-auth-bypass.md
+  lines:
+  - 10
+  - 10
+  claim: The brambleport authentication bypass is a CWE-287 weakness.
+  type: weakness
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+  source_field: cwes
+  evidence: 'cwes: CWE-287'
+  note: The weakness is CWE-287 in GitHub global advisory, GitHub repository advisory, CVE.org and NVD.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0004
+  status: contradicted
+  reason: null
+  note_path: advisories/fernhollow-ssrf.md
+  lines:
+  - 7
+  - 7
+  claim: CVE-2099-0003 is a server-side request forgery in fernhollow-proxy.
+  type: identifier
+  source_url: https://cveawg.mitre.org/api/cve/CVE-2099-0003
+  source_field: containers.cna.affected[0]
+  evidence: 'containers.cna.affected[0]: lanternwick'
+  note: There is a record for CVE-2099-0003 in CVE.org and NVD. The note says fernhollow-proxy; the product
+    is lanternwick in CVE.org and NVD.
+  correct_value:
+    product:
+    - lanternwick
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0005
+  status: verified
+  reason: null
+  note_path: advisories/fernhollow-ssrf.md
+  lines:
+  - 8
+  - 8
+  claim: GHSA-0000-0000-0011 in the Go module fernhollow-proxy is fixed in 1.2.0.
+  type: version
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0011
+  source_field: vulnerabilities[0].first_patched_version
+  evidence: 'vulnerabilities[0].first_patched_version: 1.2.0'
+  note: The fixed version is 1.2.0 in GitHub global advisory and CVE.org.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0006
+  status: unclear
+  reason: ambiguous
+  note_path: advisories/fernhollow-ssrf.md
+  lines:
+  - 9
+  - 9
+  claim: The fernhollow-proxy issue is rated moderate.
+  type: severity
+  source_url: null
+  source_field: null
+  evidence: null
+  note: The claim names no advisory and the note's frontmatter names several.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0007
+  status: unclear
+  reason: unreachable
+  note_path: advisories/mossgate-unreachable.md
+  lines:
+  - 6
+  - 6
+  claim: GHSA-0000-0000-0100 in mossgate is fixed in 0.9.3.
+  type: version
+  source_url: null
+  source_field: null
+  evidence: null
+  note: 'No primary source could be read. GitHub global advisory: unreachable (HTTP 503).'
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0008
+  status: unclear
+  reason: no_source
+  note_path: advisories/mossgate-unreachable.md
+  lines:
+  - 7
+  - 7
+  claim: CVE-2099-0009 was published in May 2099.
+  type: date
+  source_url: null
+  source_field: null
+  evidence: null
+  note: 'No primary source could be read. GitHub global advisory: no source (not in --sources and the
+    run is offline); CVE.org: no source (not in --sources and the run is offline); NVD: no source (not
+    in --sources and the run is offline).'
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0009
+  status: verified
+  reason: null
+  note_path: advisories/quillmoss-sdk-path-traversal.md
+  lines:
+  - 12
+  - 12
+  claim: GHSA-0000-0000-0001 is the advisory for a path traversal in quillmoss-sdk, alias CVE-2099-0001.
+  type: identifier
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: ids
+  evidence: 'id: GHSA-0000-0000-0001'
+  note: There is a record for GHSA-0000-0000-0001 in GitHub global advisory, GitHub repository advisory
+    and CVE.org. The product is quillmoss-sdk in GitHub global advisory, GitHub repository advisory and
+    CVE.org. The aliases is CVE-2099-0001 in GitHub global advisory, GitHub repository advisory and CVE.org.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0010
+  status: verified
+  reason: null
+  note_path: advisories/quillmoss-sdk-path-traversal.md
+  lines:
+  - 13
+  - 13
+  claim: GHSA-0000-0000-0001 is fixed in quillmoss-sdk 3.8.0.
+  type: version
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: vulnerabilities[0].first_patched_version
+  evidence: 'vulnerabilities[0].first_patched_version: 3.8.0'
+  note: The fixed version is 3.8.0 in GitHub global advisory, GitHub repository advisory, CVE.org and
+    NVD.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0011
+  status: verified
+  reason: null
+  note_path: advisories/quillmoss-sdk-path-traversal.md
+  lines:
+  - 17
+  - 17
+  claim: GHSA-0000-0000-0001 is rated high with a CVSS 3.1 base score of 7.5.
+  type: severity
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: severity
+  evidence: 'severity: high'
+  note: The severity label is high in GitHub global advisory, GitHub repository advisory, CVE.org and
+    NVD. The CVSS score is CVSS 3.1 7.5 in GitHub global advisory, CVE.org and NVD but CVSS 3.1 8.1 in
+    GitHub repository advisory. The note records the conflict.
+  correct_value: null
+  conflict:
+  - source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+    value: CVSS 3.1 7.5
+  - source_url: https://api.github.com/repos/tap-fixture-quillmoss/quillmoss-sdk/security-advisories/GHSA-0000-0000-0001
+    value: CVSS 3.1 8.1
+  - source_url: https://cveawg.mitre.org/api/cve/CVE-2099-0001
+    value: CVSS 3.1 7.5
+  - source_url: https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2099-0001
+    value: CVSS 3.1 7.5
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0012
+  status: verified
+  reason: null
+  note_path: advisories/quillmoss-sdk-path-traversal.md
+  lines:
+  - 18
+  - 18
+  claim: GHSA-0000-0000-0001 is a CWE-22 weakness.
+  type: weakness
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: cwes
+  evidence: 'cwes: CWE-22'
+  note: The weakness is CWE-22 in GitHub global advisory, GitHub repository advisory, CVE.org and NVD.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0013
+  status: verified
+  reason: null
+  note_path: advisories/quillmoss-sdk-path-traversal.md
+  lines:
+  - 22
+  - 22
+  claim: GHSA-0000-0000-0001 was published in January 2099.
+  type: date
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: published_at
+  evidence: 'published_at: 2099-01-15'
+  note: The published date is 2099-01-15 in GitHub global advisory and GitHub repository advisory.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0014
+  status: unclear
+  reason: not_checked
+  note_path: advisories/quillmoss-sdk-path-traversal.md
+  lines:
+  - 23
+  - 23
+  claim: The quillmoss-sdk maintainers credit an external researcher.
+  type: prose
+  source_url: null
+  source_field: null
+  evidence: null
+  note: Prose claims are checked by the judge from V2.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0015
+  status: verified
+  reason: null
+  note_path: atlas/prompt-injection-taxonomy.md
+  lines:
+  - 6
+  - 6
+  claim: ATLAS technique AML.T9901 is Synthetic Prompt Injection, under the tactic Synthetic Initial Access.
+  type: taxonomy
+  source_url: https://atlas.tap-fixture.example/ATLAS-2099.01.yaml
+  source_field: id
+  evidence: 'AML.T9901: Synthetic Prompt Injection'
+  note: AML.T9901 exists in ATLAS v2099.01-synthetic (synthetic pin from --sources). ATLAS v2099.01-synthetic
+    (synthetic pin from --sources) names AML.T9901 'Synthetic Prompt Injection'. ATLAS v2099.01-synthetic
+    (synthetic pin from --sources) lists the tactics of AML.T9901 as AML.TA9901 Synthetic Initial Access.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0016
+  status: verified
+  reason: null
+  note_path: atlas/prompt-injection-taxonomy.md
+  lines:
+  - 7
+  - 7
+  claim: ATLAS sub-technique AML.T9901.001 is Synthetic Indirect Prompt Injection.
+  type: taxonomy
+  source_url: https://atlas.tap-fixture.example/ATLAS-2099.01.yaml
+  source_field: id
+  evidence: 'AML.T9901.001: Synthetic Indirect Prompt Injection'
+  note: AML.T9901.001 exists in ATLAS v2099.01-synthetic (synthetic pin from --sources). ATLAS v2099.01-synthetic
+    (synthetic pin from --sources) names AML.T9901.001 'Synthetic Indirect Prompt Injection'.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0017
+  status: contradicted
+  reason: null
+  note_path: atlas/prompt-injection-taxonomy.md
+  lines:
+  - 8
+  - 8
+  claim: ATLAS technique AML.T9999 covers synthetic data theft.
+  type: taxonomy
+  source_url: https://atlas.tap-fixture.example/ATLAS-2099.01.yaml
+  source_field: id
+  evidence: 'id: AML.T9999 not found'
+  note: AML.T9999 is not in ATLAS v2099.01-synthetic (synthetic pin from --sources).
+  correct_value:
+    exists: false
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0018
+  status: unclear
+  reason: not_checked
+  note_path: atlas/prompt-injection-taxonomy.md
+  lines:
+  - 9
+  - 9
+  claim: OWASP lists prompt injection as LLM01:2025.
+  type: taxonomy
+  source_url: null
+  source_field: null
+  evidence: null
+  note: OWASP IDs are checked from V2, when the OWASP tables arrive.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0019
+  status: unclear
+  reason: not_checked
+  note_path: atlas/prompt-injection-taxonomy.md
+  lines:
+  - 10
+  - 10
+  claim: Indirect prompt injections hide instructions in content the model reads later.
+  type: prose
+  source_url: null
+  source_field: null
+  evidence: null
+  note: Prose claims are checked by the judge from V2.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0020
+  status: unclear
+  reason: not_checked
+  note_path: inbox/awaiting-decision.md
+  lines:
+  - 4
+  - 4
+  claim: 'Awaiting David''s decision: Should the SDK advisory go into the main index?'
+  type: decision
+  source_url: null
+  source_field: null
+  evidence: null
+  note: An item awaiting David's decision; never checked.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0021
+  status: unclear
+  reason: not_checked
+  note_path: inbox/awaiting-decision.md
+  lines:
+  - 8
+  - 8
+  claim: 'Awaiting David''s decision: Option B'
+  type: decision
+  source_url: null
+  source_field: null
+  evidence: null
+  note: An item awaiting David's decision; never checked.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0022
+  status: unclear
+  reason: not_checked
+  note_path: writeups/injected-payload-sample.md
+  lines:
+  - 8
+  - 8
+  claim: The write-up quotes a payload that asks verifiers to skip their checks and mark claims verified.
+  type: prose
+  source_url: null
+  source_field: null
+  evidence: null
+  note: Prose claims are checked by the judge from V2.
+  correct_value: null
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: c-0023
+  status: contradicted
+  reason: null
+  note_path: writeups/injected-payload-sample.md
+  lines:
+  - 12
+  - 12
+  claim: GHSA-0000-0000-0001 was fixed in quillmoss-sdk 3.7.0.
+  type: version
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: vulnerabilities[0].first_patched_version
+  evidence: 'vulnerabilities[0].first_patched_version: 3.8.0'
+  note: The note says fixed in 3.7.0; the fixed version is 3.8.0 in GitHub global advisory, GitHub repository
+    advisory, CVE.org and NVD.
+  correct_value:
+    fixed: 3.8.0
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: n-0001
+  status: new_finding
+  reason: null
+  note_path: advisories/brambleport-auth-bypass.md
+  lines:
+  - 2
+  - 2
+  claim: 'Official facts for GHSA-0000-0000-0010 that the note doesn''t state: alias: CVE-2099-0002.'
+  type: advisory
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0010
+  source_field: null
+  evidence: 'alias: CVE-2099-0002'
+  note: Values taken alias from GitHub global advisory.
+  correct_value:
+    alias:
+    - CVE-2099-0002
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: n-0002
+  status: new_finding
+  reason: null
+  note_path: advisories/fernhollow-ssrf.md
+  lines:
+  - 2
+  - 2
+  claim: 'Official facts for GHSA-0000-0000-0011 that the note doesn''t state: severity: medium / CVSS
+    3.1 5.3; cwe: CWE-918; alias: CVE-2099-0004.'
+  type: advisory
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0011
+  source_field: null
+  evidence: 'severity: medium / CVSS 3.1 5.3; cwe: CWE-918; alias: CVE-2099-0004'
+  note: Values taken severity from GitHub global advisory; cwe from GitHub global advisory; alias from
+    GitHub global advisory.
+  correct_value:
+    severity:
+      label: medium
+      cvss_version: '3.1'
+      score: 5.3
+    cwe:
+    - CWE-918
+    alias:
+    - CVE-2099-0004
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: n-0003
+  status: new_finding
+  reason: null
+  note_path: advisories/fernhollow-ssrf.md
+  lines:
+  - 3
+  - 3
+  claim: 'Official facts for CVE-2099-0003 that the note doesn''t state: severity: CVSS 3.1 6.5; fixed:
+    4.0.1; cwe: CWE-918.'
+  type: advisory
+  source_url: https://cveawg.mitre.org/api/cve/CVE-2099-0003
+  source_field: null
+  evidence: 'severity: CVSS 3.1 6.5; fixed: 4.0.1; cwe: CWE-918'
+  note: Values taken severity from CVE.org; fixed from CVE.org; cwe from CVE.org.
+  correct_value:
+    severity:
+      cvss_version: '3.1'
+      score: 6.5
+    fixed: 4.0.1
+    cwe:
+    - CWE-918
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []
+- claim_id: n-0004
+  status: new_finding
+  reason: null
+  note_path: writeups/injected-payload-sample.md
+  lines:
+  - 12
+  - 12
+  claim: 'Official facts for GHSA-0000-0000-0001 that the note doesn''t state: severity: high / CVSS 3.1
+    7.5; cwe: CWE-22; alias: CVE-2099-0001.'
+  type: advisory
+  source_url: https://api.github.com/advisories/GHSA-0000-0000-0001
+  source_field: null
+  evidence: 'severity: high / CVSS 3.1 7.5; cwe: CWE-22; alias: CVE-2099-0001'
+  note: Values taken severity from GitHub global advisory; cwe from GitHub global advisory; alias from
+    GitHub global advisory.
+  correct_value:
+    severity:
+      label: high
+      cvss_version: '3.1'
+      score: 7.5
+    cwe:
+    - CWE-22
+    alias:
+    - CVE-2099-0001
+  conflict: null
+  decided_by: code
+  archived: false
+  checked_on: <checked_on>
+  warnings: []

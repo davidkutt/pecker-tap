@@ -1,0 +1,12 @@
+{
+  "body_file": "api.github.com_advisories_GHSA-0000-0000-0011-dd6fcdc44a.body",
+  "fetched_at": "2099-02-01T10:00:00Z",
+  "final_url": "https://api.github.com/advisories/GHSA-0000-0000-0011",
+  "headers": {
+    "content-type": "application/json; charset=utf-8"
+  },
+  "redirects": [],
+  "sha256": "2c1623d0cd16a475c10e3cdd59e9fc26d1b9b706e04374849950fac3d54d51eb",
+  "status": 200,
+  "url": "https://api.github.com/advisories/GHSA-0000-0000-0011"
+}

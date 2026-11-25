@@ -1,0 +1,73 @@
+[project]
+name = "pecker-tap"
+version = "0.1.0"
+description = "Claim verifier for research notes: checks each claim against primary sources by code."
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+license = "MIT"
+authors = [{ name = "davidkutt" }]
+dependencies = [
+    "httpcore~=1.0.9",
+    "httpx~=0.28.1",
+    "langchain-core~=1.8.4",
+    "langchain-openai~=1.8.5",
+    "langgraph~=1.2.24",
+    "langgraph-checkpoint-sqlite~=3.1.3",
+    "packaging~=26.3",
+    "pydantic~=2.14.4",
+    "python-dotenv~=1.2.4",
+    "pyyaml~=6.0.4",
+    "semver~=3.1.2",
+]
+
+[project.scripts]
+tap = "pecker_tap.cli:main"
+
+[dependency-groups]
+dev = [
+    "pyright~=1.1.414",
+    "pytest~=9.2.0",
+    "pytest-asyncio~=1.5.0",
+    "ruff~=0.17.6",
+    "types-pyyaml~=6.0.12",
+]
+
+[build-system]
+requires = ["uv_build>=0.11,<0.14"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["fixtures"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "S", "PT", "ASYNC", "C4", "PIE", "RET"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.pyright]
+include = ["src", "tests", "tools"]
+strict = ["src", "tools"]
+# tools/ holds dev-only scripts (not part of the package); tests import them by module name.
+extraPaths = ["tools"]
+pythonVersion = "3.13"
+venvPath = "."
+venv = ".venv"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tools"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra"
+filterwarnings = [
+    # Ctrl-C drops LangGraph's background checkpoint writes for tasks that finished in the
+    # interrupted step; extractions/ and calls.jsonl keep what matters (graph/run.py).
+    "ignore:coroutine 'AsyncSqliteSaver.aput_writes' was never awaited:RuntimeWarning",
+]
+
+[tool.uv]
+# Hold back releases younger than Dependabot's seven-day cooldown where an older one fits.
+exclude-newer-package = { types-pyyaml = "2026-11-16T00:00:00Z" }
